@@ -7,22 +7,23 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
+        // Creating users
         System.out.println("Welcome Budget Planner");
         System.out.println("How many people will the budget split?");
         Scanner scanner = new Scanner(System.in);
         ArrayList<User> userList = prepareUserList(scanner);
         System.out.println("Added user count: " + userList.size());
 
+        // Setting the budget
         System.out.println("set a limit for the budget so we can warn you when you reach the limit: ");
         int limit = scanner.nextInt();
 
         ArrayList<Expense> expenseList = new ArrayList<>();
 
+        // Creating options - 0: Make Expense", 1: "List Specific Persons Expense", 2: "List All Expenses", 3: "Make Split", 4: "Close budget"
+        String[] optionList= prepareOptionList();
         while (true){
-            // string method needs to be used
-            // wrapper class
             System.out.println("What would you like to do:");
-            String[] optionList= prepareOptionList();
             for (int i=0;i<optionList.length; i ++){
                 System.out.println(optionList[i] + ":  " + i);
             }
@@ -77,22 +78,27 @@ public class Main {
                     break;
                 case 3:
                     double totalAmount = 0;
-                    List<Split> splitList = calculateSplitByUser(expenseList);
+                    ArrayList<Split> splitList = calculateSplitByUser(expenseList);
                     for (Split split : splitList){
                         totalAmount += split.amount;
                     }
                     makeSplit(totalAmount, splitList);
                     break;
                 case 4:
+                    for(User eachUser: userList) {
+                        System.out.println("id: " + userList.indexOf(eachUser) + " Name: " + eachUser.name);
+                    }
+                    break;
+                case 5:
                     System.exit(1);
             }
         }
     }
     public static String[] prepareOptionList(){
-        return new String[]{"Make Expense", "List Specific Persons Expense", "List All Expenses", "Make Split", "Close budget"};
+        return new String[]{"Make Expense", "List Specific Persons Expense", "List All Expenses", "Make Split", "List All Users", "Close budget"};
     }
 
-    public static boolean isLimitBreached(int limit, List<Expense> expenseList){
+    public static boolean isLimitBreached(int limit, ArrayList<Expense> expenseList){
         int expenseAmount = 0;
         for (Expense expense : expenseList){
             expenseAmount += expense.amount;
@@ -125,7 +131,7 @@ public class Main {
         return userList;
     }
 
-    public static List<Split> calculateSplitByUser(List<Expense> expenseList){
+    public static ArrayList<Split> calculateSplitByUser(ArrayList<Expense> expenseList){
         ArrayList<Split> splitList = new ArrayList<>();
 
         for (Expense expense : expenseList){
@@ -141,7 +147,7 @@ public class Main {
         }
         return splitList;
     }
-    public static Split existInSplitList(String userName, List<Split> splitList){
+    public static Split existInSplitList(String userName, ArrayList<Split> splitList){
         for (Split split : splitList){
             if (split.userName.equals(userName)){
                 return split;
@@ -151,7 +157,7 @@ public class Main {
     }
 
     // wrapper class
-    public static void makeSplit(Double totalAmount, List<Split> splitList){
+    public static void makeSplit(Double totalAmount, ArrayList<Split> splitList){
         double amount = (totalAmount / splitList.size());
         for (Split split : splitList){
             if (split.amount > amount){
